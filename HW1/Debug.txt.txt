@@ -1,0 +1,62 @@
+****************
+* HW1 Debugging
+* CS221-1
+* 02/9/2020
+* Cesar Raymundo
+**************** 
+First Bug: emptySet_testIsEmpty    ***FAIL***
+
+When I saw this result after running the test class, I went back to look at the isEmpty() method.
+That's where I saw this,
+	public boolean isEmpty() {
+		return (rear > 0);
+	}
+This will always fail because as long rear is greater is 0, the set will not be empty. In order 
+to fix this bug, I changed it to this,
+	public boolean isEmpty() {
+		return (rear == 0);
+	}
+ and the class started to pass more tests. I knew there was more bugs, so I continued to the next one.
+
+Second Bug: emptySet_addA_A_testIsEmpty     ***FAIL***
+
+To fix this problem, I used the debugger. I set a breakpoint at line 145 on the SetTester class and stepped
+into each step. While doing so, I notice the issue with the add(T element) method. When using the debugger, I 
+notice the element value was 1 and the rear value was 0 after this block of code,
+	if (!contains(element)) {
+			if (rear >= setArray.length) {
+				expandCapacity();
+			}
+			setArray[rear] = element;
+		}
+	}
+It was there when I noticed it was not incrementing and only setting an index at 0. To fix this I changed the code to this,
+	if (!contains(element)) {
+			if (rear >= setArray.length) {
+				expandCapacity();
+			}
+			setArray[rear] = element;
+			rear ++;
+		}
+	}
+Now I was only failing 2 test out of 93, but I knew that was off because it should be out of 111. I countined to 
+find the next issue.
+
+Third and Final Bug: A_addB_AB_testRemoveA        ***FAIL***
+
+This bug was not as easy to notice as the other ones. But once I found it, it made sense. I put a breakpoint
+at line 263 on the SetTester class and started stepping into each line of code. I knew the issue was going to be
+in the remove(T element) method. Judging by the fail test, but I just didnt know where. After a couple of runs
+I notice this within the method,
+		while (i < rear) {
+					setArray[i] = setArray[i+1];
+					i++;
+				}
+			}
+I discovered that this code was trying to fill a gap at an index that didn't exist. To fix this, I changed the code to this,
+		while (i < rear-1) {
+					setArray[i] = setArray[i+1];
+					i++;
+				}
+			}
+Once I ran the tester again, I was passing all 111 tests and knew there was no more fixing needed to be done.
